@@ -22,7 +22,7 @@ A **FastAPI**-based Task Management System that allows users to manage tasks eff
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/meezi123/Task-Management-System
+git clone https://github.com/meezi123/Task-Management-System.git
 cd Task-Management-System
 ```
 2. Create a virtual environment and activate it:
