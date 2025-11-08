@@ -71,7 +71,7 @@ pytest -v
 ## Bonus Features
 - Searching based on title and description
 - Sorting based on priority (low to high)
-- JWT authentication (secure routes)
+- OAuth2 authentication (secure routes)
 - Background tasks notification
 ## Author
 
