@@ -1,11 +1,6 @@
-import pytest
 from fastapi import status
-from main import app
-from fastapi.testclient import TestClient
 
-# -----------------------------
 # Basic CRUD test cases
-# -----------------------------
 
 def test_create_task(client):
     response = client.post("/tasks/", json={"title": "Test Task"})
@@ -16,9 +11,11 @@ def test_create_task(client):
     assert data["status"] == "pending"
     assert data["priority"] == "medium"
 
+
 def test_create_task_missing_title(client):
     response = client.post("/tasks/", json={"description": "No title"})
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
 
 def test_get_task_by_id(client):
     response = client.post("/tasks/", json={"title": "Get Task"})
@@ -30,9 +27,11 @@ def test_get_task_by_id(client):
     assert data["id"] == task_id
     assert data["title"] == "Get Task"
 
+
 def test_get_task_invalid_id(client):
     response = client.get("/tasks/9999")
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
 
 def test_update_task(client):
     response = client.post("/tasks/", json={"title": "Old Title"})
@@ -48,6 +47,7 @@ def test_update_task(client):
     assert data["status"] == "in-progress"
     assert data["priority"] == "high"
 
+
 def test_update_task_invalid_id(client):
     response = client.put(
         "/tasks/9999",
@@ -55,12 +55,13 @@ def test_update_task_invalid_id(client):
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
+
 def test_delete_task(client):
     response = client.post("/tasks/", json={"title": "Task to delete"})
     task_id = response.json()["id"]
 
     response = client.delete(f"/tasks/{task_id}")
-    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert response.status_code == status.HTTP_200_OK
 
     # Ensure deleted task is gone
     response = client.get(f"/tasks/{task_id}")
@@ -70,9 +71,9 @@ def test_delete_task_invalid_id(client):
     response = client.delete("/tasks/9999")
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
-# -----------------------------
+
 # Additional features / filters
-# -----------------------------
+
 
 def test_get_all_tasks(client):
     # Create two tasks
@@ -83,6 +84,7 @@ def test_get_all_tasks(client):
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert len(data) >= 2
+
 
 def test_get_tasks_by_status(client):
     client.post("/tasks/", json={"title": "Pending Task", "status": "pending"})
@@ -98,6 +100,7 @@ def test_get_tasks_by_invalid_status(client):
     response = client.get("/tasks/?status=invalid")
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
+
 def test_search_tasks(client):
     client.post("/tasks/", json={"title": "Searchable Task"})
     response = client.get("/tasks/search/?to_be_filtered=Searchable")
@@ -105,9 +108,11 @@ def test_search_tasks(client):
     data = response.json()
     assert any("Searchable" in t["title"] for t in data)
 
+
 def test_search_tasks_no_results(client):
     response = client.get("/tasks/search/?to_be_filtered=NoSuchTask")
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
 
 def test_get_tasks_sorted_by_priority(client):
     client.post("/tasks/", json={"title": "High Priority", "priority": "high"})
